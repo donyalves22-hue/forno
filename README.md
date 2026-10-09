@@ -1,258 +1,652 @@
-<!DOCTYPE html>
 
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#151515">
-  <meta name="description" content="FORNO — Pizzas artesanais, sabores irresistíveis e pedidos online.">
-  <title>FORNO | Pizzaria</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#111;--card:#1d1d1d;--red:#e63932;--gold:#f4bd60;--white:#fff;--muted:#b5b5b5}
-    body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--white);line-height:1.5}
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
-    header{background:#171717;border-bottom:1px solid #333;padding:18px 6%;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:5}
-    .logo{font-size:30px;font-weight:900;letter-spacing:4px;color:var(--gold)}
-    .logo span{color:var(--red)}
-    .cart-button,.primary{border:0;background:var(--red);color:white;padding:12px 18px;border-radius:9px;font-weight:bold}
-    .hero{padding:75px 6%;background:linear-gradient(90deg,#111 10%,#111d 60%,#1118),url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1800&q=85') center/cover;min-height:390px;display:flex;align-items:center}
-    .hero-content{max-width:600px}
-    .eyebrow{color:var(--gold);font-weight:bold;text-transform:uppercase;letter-spacing:3px;font-size:13px}
-    h1{font-size:clamp(40px,7vw,70px);line-height:1.05;margin:15px 0}
-    h1 span{color:var(--red)}
-    .hero p{color:#ddd;max-width:480px;margin-bottom:24px;font-size:17px}
-    .section{padding:45px 6%}
-    .section-title{font-size:30px;margin-bottom:8px}
-    .subtext{color:var(--muted);margin-bottom:22px}
-    .toolbar{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:25px}
-    .search{flex:1;min-width:220px;background:#202020;color:white;border:1px solid #444;border-radius:9px;padding:13px}
-    .filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:25px}
-    .filter{background:#222;color:#ddd;border:1px solid #444;padding:9px 15px;border-radius:30px}
-    .filter.active,.filter:hover{background:var(--gold);color:#171717;border-color:var(--gold)}
-    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-    .product{background:var(--card);border:1px solid #303030;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-    .product img{width:100%;height:190px;object-fit:cover;background:#292929}
-    .product-body{padding:17px;display:flex;flex-direction:column;flex:1}
-    .tag{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:bold}
-    .product h3{font-size:20px;margin:5px 0}
-    .product p{font-size:14px;color:var(--muted);flex:1;margin-bottom:17px}
-    .product-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}
-    .price{font-size:20px;font-weight:bold;color:var(--gold)}
-    .add{background:var(--red);color:#fff;border:0;border-radius:8px;padding:10px 13px;font-weight:bold}
-    .empty{color:var(--muted);padding:25px 0}
-    .info{background:#1b1b1b;border-block:1px solid #333;padding:35px 6%;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-    .info h3{color:var(--gold);margin-bottom:6px}
-    .info p{color:var(--muted);font-size:14px}
-    footer{text-align:center;padding:28px 15px;color:#999;font-size:13px}
-    .modal{display:none;position:fixed;inset:0;background:#000c;z-index:10;padding:20px;overflow:auto}
-    .modal.open{display:flex;align-items:flex-start;justify-content:center}
-    .modal-content{background:#1b1b1b;border:1px solid #444;border-radius:14px;padding:24px;width:100%;max-width:560px;margin:auto}
-    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px}
-    .close{background:#333;color:#fff;border:0;border-radius:8px;padding:8px 12px}
-    .cart-line{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #383838}
-    .qty{display:flex;align-items:center;gap:9px}
-    .qty button{background:#333;color:#fff;border:0;border-radius:5px;width:27px;height:27px}
-    .total{display:flex;justify-content:space-between;margin:20px 0;font-size:21px;font-weight:bold}
-    .form-field{display:flex;flex-direction:column;gap:6px;margin:13px 0}
-    .form-field label{font-size:14px;color:#ddd}
-    .form-field input,.form-field select,.form-field textarea{width:100%;padding:12px;background:#111;color:white;border:1px solid #444;border-radius:8px}
-    .full{width:100%;margin-top:10px}
-    .notice{font-size:12px;color:#aaa;margin-top:12px}
-    @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:560px){header{padding:14px 5%}.logo{font-size:25px}.hero{padding:55px 5%;min-height:350px}.section{padding:35px 5%}.grid{grid-template-columns:1fr}.product img{height:220px}.info{grid-template-columns:1fr;padding:30px 5%}.section-title{font-size:26px}}
-  </style>
-</head>
-<body>
-  <header>
-    <div class="logo">FOR<span>NO</span>.</div>
-    <button class="cart-button" onclick="openCart()">🛒 Sacola (<span id="cart-count">0</span>)</button>
-  </header>
+import React, { useEffect, useMemo, useState } from "react";
 
-  <section class="hero">
-    <div class="hero-content">
-      <div class="eyebrow">Feito com paixão, servido quentinho</div>
-      <h1>Sabor que sai<br>do <span>FORNO.</span></h1>
-      <p>Pizzas deliciosas, ingredientes selecionados e aquele sabor especial para compartilhar com quem você gosta.</p>
-      <button class="primary" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">Ver cardápio ↓</button>
-    </div>
-  </section>
+const WHATSAPP = "5583999999999"; // Troque pelo WhatsApp da pizzaria
+const ADMIN_PASSWORD = "1234"; // Demonstração: substitua por autenticação segura
+const CATEGORIES = ["Pizzas", "Espetinhos", "Refrigerantes", "Porções"];
+const STATUSES = [
+  "Recebido",
+  "Confirmado",
+  "Em preparo",
+  "Saiu para entrega",
+  "Entregue",
+  "Cancelado",
+];
 
-  <main>
-    <section class="section" id="cardapio">
-      <h2 class="section-title">Nosso cardápio</h2>
-      <p class="subtext">Escolha seus sabores favoritos e monte seu pedido.</p>
-      <div class="toolbar">
-        <input class="search" id="search" type="search" placeholder="🔎 Buscar pizza ou bebida..." oninput="renderProducts()">
-      </div>
-      <div class="filters" id="filters">
-        <button class="filter active" data-category="Todas">Tudo</button>
-        <button class="filter" data-category="Salgadas">Pizzas salgadas</button>
-        <button class="filter" data-category="Doces">Pizzas doces</button>
-        <button class="filter" data-category="Bebidas">Bebidas</button>
-      </div>
-      <div class="grid" id="products"></div>
-      <p class="empty" id="empty" hidden>Nenhum produto encontrado.</p>
-    </section>
+const INITIAL_PRODUCTS = [
+  { id: 1, name: "Pizza Calabresa", category: "Pizzas", price: 39.90, description: "Calabresa, cebola, queijo e orégano.", image: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=700", available: true },
+  { id: 2, name: "Pizza Mussarela", category: "Pizzas", price: 35.90, description: "Mussarela, tomate e orégano.", image: "https://images.unsplash.com/photo-1579751626657-72bc17010498?w=700", available: true },
+  { id: 3, name: "Pizza Portuguesa", category: "Pizzas", price: 44.90, description: "Presunto, ovos, cebola, queijo e azeitona.", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=700", available: true },
+  { id: 4, name: "Espetinho de Carne", category: "Espetinhos", price: 10, description: "Espetinho assado na hora.", image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=700", available: true },
+  { id: 5, name: "Espetinho de Frango", category: "Espetinhos", price: 8, description: "Frango temperado e grelhado.", image: "https://images.unsplash.com/photo-1532634896-26909d0d4b0c?w=700", available: true },
+  { id: 6, name: "Coca-Cola 2 litros", category: "Refrigerantes", price: 12, description: "Refrigerante gelado de 2 litros.", image: "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=700", available: true },
+  { id: 7, name: "Guaraná 2 litros", category: "Refrigerantes", price: 10, description: "Refrigerante gelado de 2 litros.", image: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=700", available: true },
+  { id: 8, name: "Batata frita", category: "Porções", price: 18, description: "Porção crocante de batatas.", image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=700", available: true },
+  { id: 9, name: "Calabresa acebolada", category: "Porções", price: 25, description: "Calabresa acebolada para compartilhar.", image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700", available: true },
+];
 
-```
-<section class="info">
-  <div><h3>🍕 Ingredientes selecionados</h3><p>Sabores preparados com cuidado para você.</p></div>
-  <div><h3>🛵 Peça sem complicação</h3><p>Monte sua sacola e envie seu pedido pelo WhatsApp.</p></div>
-  <div><h3>❤️ Feito para compartilhar</h3><p>Uma boa pizza deixa qualquer momento melhor.</p></div>
-</section>
-```
+const money = (n) =>
+  Number(n || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
-  </main>
+function load(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
-  <footer>© <span id="year"></span> FORNO Pizzaria. Todos os direitos reservados.</footer>
+export default function App() {
+  const [products, setProducts] = useState(() =>
+    load("forno_products", INITIAL_PRODUCTS)
+  );
+  const [cart, setCart] = useState([]);
+  const [category, setCategory] = useState("Pizzas");
+  const [search, setSearch] = useState("");
+  const [admin, setAdmin] = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState(() =>
+    load("forno_delivery", 5)
+  );
+  const [pixKey, setPixKey] = useState(() =>
+    load("forno_pix", "")
+  );
+  const [orders, setOrders] = useState(() =>
+    load("forno_orders", [])
+  );
+  const [trackingId, setTrackingId] = useState("");
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    payment: "Pix",
+    notes: "",
+  });
+  const [view, setView] = useState("menu");
 
-  <div class="modal" id="cart-modal" role="dialog" aria-modal="true" aria-labelledby="cart-title">
-    <div class="modal-content">
-      <div class="modal-head"><h2 id="cart-title">Sua sacola</h2><button class="close" onclick="closeCart()">Fechar ✕</button></div>
-      <div id="cart-items"></div>
-      <div class="total"><span>Total</span><span id="cart-total">R$ 0,00</span></div>
-      <form id="order-form">
-        <div class="form-field"><label for="customer">Seu nome</label><input id="customer" required placeholder="Como podemos te chamar?"></div>
-        <div class="form-field"><label for="phone">Telefone para contato</label><input id="phone" required type="tel" placeholder="(DDD) 99999-9999"></div>
-        <div class="form-field"><label for="delivery">Como deseja receber?</label><select id="delivery"><option value="Entrega">Entrega</option><option value="Retirada no balcão">Retirada no balcão</option></select></div>
-        <div class="form-field" id="address-field"><label for="address">Endereço de entrega</label><input id="address" placeholder="Rua, número e bairro"></div>
-        <div class="form-field"><label for="payment">Forma de pagamento</label><select id="payment"><option>Pix</option><option>Dinheiro</option><option>Cartão de crédito</option><option>Cartão de débito</option></select></div>
-        <div class="form-field"><label for="notes">Observações (opcional)</label><textarea id="notes" rows="2" placeholder="Ex.: tirar cebola, troco para..."></textarea></div>
-        <button class="primary full" type="submit">Enviar pedido pelo WhatsApp</button>
-        <p class="notice">Os preços deste exemplo precisam ser confirmados pela pizzaria. Configure o número do WhatsApp antes de receber pedidos.</p>
-      </form>
-    </div>
-  </div>
+  useEffect(() => {
+    localStorage.setItem("forno_products", JSON.stringify(products));
+  }, [products]);
 
-  <script>
-    // PERSONALIZE AQUI: use o WhatsApp comercial com código do país e DDD, somente números.
-    const WHATSAPP_NUMBER = "";
-    const DELIVERY_FEE = 0;
+  useEffect(() => {
+    localStorage.setItem("forno_delivery", JSON.stringify(deliveryFee));
+  }, [deliveryFee]);
 
-    const products = [
-      {id:1,name:"Calabresa",category:"Salgadas",description:"Muçarela, calabresa fatiada, cebola e orégano.",price:39.90,image:"https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=700&q=80"},
-      {id:2,name:"Muçarela",category:"Salgadas",description:"Molho de tomate, muçarela derretida e orégano.",price:36.90,image:"https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=700&q=80"},
-      {id:3,name:"Frango com Catupiry",category:"Salgadas",description:"Frango temperado, catupiry e muçarela.",price:44.90,image:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=700&q=80"},
-      {id:4,name:"Portuguesa",category:"Salgadas",description:"Presunto, ovo, cebola, azeitona e muçarela.",price:42.90,image:"https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80"},
-      {id:5,name:"Chocolate",category:"Doces",description:"Chocolate cremoso com uma deliciosa cobertura.",price:39.90,image:"https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=700&q=80"},
-      {id:6,name:"Romeu e Julieta",category:"Doces",description:"A combinação clássica de queijo e goiabada.",price:38.90,image:"https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=700&q=80"},
-      {id:7,name:"Refrigerante lata",category:"Bebidas",description:"Lata gelada de 350 ml. Consulte os sabores.",price:6.00,image:"https://images.unsplash.com/photo-1581636625402-29b2a704ef13?auto=format&fit=crop&w=700&q=80"},
-      {id:8,name:"Refrigerante 2 litros",category:"Bebidas",description:"Refrigerante para compartilhar com a família.",price:12.00,image:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=700&q=80"},
-      {id:9,name:"Água mineral",category:"Bebidas",description:"Água mineral para acompanhar seu pedido.",price:4.00,image:"https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&w=700&q=80"}
-    ];
+  useEffect(() => {
+    localStorage.setItem("forno_pix", JSON.stringify(pixKey));
+  }, [pixKey]);
 
-    let activeCategory = "Todas";
-    const cart = {};
+  useEffect(() => {
+    localStorage.setItem("forno_orders", JSON.stringify(orders));
+  }, [orders]);
 
-    const money = value => value.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const visibleProducts = useMemo(
+    () =>
+      products.filter(
+        (p) =>
+          p.available &&
+          p.category === category &&
+          p.name.toLowerCase().includes(search.toLowerCase())
+      ),
+    [products, category, search]
+  );
 
-    function renderProducts(){
-      const term = document.getElementById("search").value.trim().toLowerCase();
-      const list = products.filter(p =>
-        (activeCategory === "Todas" || p.category === activeCategory) &&
-        (p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term))
+  const subtotal = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+  const total = subtotal + (cart.length ? Number(deliveryFee) : 0);
+
+  function addToCart(product) {
+    setCart((old) => {
+      const found = old.find((item) => item.id === product.id);
+      return found
+        ? old.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...old, { ...product, quantity: 1, notes: "" }];
+    });
+  }
+
+  function changeQuantity(id, amount) {
+    setCart((old) =>
+      old
+        .map((item) =>
+          item.id === id
+            ? { ...item, quantity: item.quantity + amount }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  }
+
+  function editProduct(product) {
+    const name = prompt("Nome do produto:", product?.name || "");
+    if (name === null || !name.trim()) return;
+
+    const categoryChoice = prompt(
+      `Categoria (${CATEGORIES.join(", ")}):`,
+      product?.category || category
+    );
+    if (!CATEGORIES.includes(categoryChoice)) {
+      alert("Escolha uma categoria válida.");
+      return;
+    }
+
+    const priceText = prompt(
+      "Preço em reais:",
+      String(product?.price ?? "0")
+    );
+    if (priceText === null) return;
+    const price = Number(priceText.replace(",", "."));
+    if (!Number.isFinite(price) || price < 0) {
+      alert("Preço inválido.");
+      return;
+    }
+
+    const description = prompt(
+      "Descrição:",
+      product?.description || ""
+    );
+    if (description === null) return;
+
+    const image = prompt(
+      "URL da foto do produto:",
+      product?.image || ""
+    );
+    if (image === null) return;
+
+    if (product) {
+      setProducts((old) =>
+        old.map((p) =>
+          p.id === product.id
+            ? { ...p, name: name.trim(), category: categoryChoice,
+                price, description, image }
+            : p
+        )
       );
-      document.getElementById("products").innerHTML = list.map(p => `
-        <article class="product">
-          <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
-          <div class="product-body">
-            <span class="tag">${p.category}</span>
-            <h3>${p.name}</h3>
-            <p>${p.description}</p>
-            <div class="product-bottom">
-              <span class="price">${money(p.price)}</span>
-              <button class="add" onclick="addToCart(${p.id})">+ Adicionar</button>
+    } else {
+      setProducts((old) => [
+        ...old,
+        {
+          id: Date.now(),
+          name: name.trim(),
+          category: categoryChoice,
+          price,
+          description,
+          image,
+          available: true,
+        },
+      ]);
+    }
+  }
+
+  function toggleAvailability(product) {
+    setProducts((old) =>
+      old.map((p) =>
+        p.id === product.id ? { ...p, available: !p.available } : p
+      )
+    );
+  }
+
+  function deleteProduct(product) {
+    if (confirm(`Excluir "${product.name}"?`)) {
+      setProducts((old) => old.filter((p) => p.id !== product.id));
+      setCart((old) => old.filter((p) => p.id !== product.id));
+    }
+  }
+
+  function openAdmin() {
+    const password = prompt("Senha administrativa:");
+    if (password === ADMIN_PASSWORD) {
+      setAdmin(true);
+      setView("admin");
+    } else if (password !== null) {
+      alert("Senha incorreta.");
+    }
+  }
+
+  function checkout() {
+    if (!cart.length) return alert("Adicione produtos ao carrinho.");
+    if (!customer.name.trim() || !customer.phone.trim() ||
+        !customer.address.trim()) {
+      return alert("Preencha nome, telefone e endereço.");
+    }
+
+    const order = {
+      id: String(Date.now()).slice(-8),
+      customer: { ...customer },
+      items: cart.map((item) => ({ ...item })),
+      subtotal,
+      deliveryFee: Number(deliveryFee),
+      total,
+      status: "Recebido",
+      createdAt: new Date().toLocaleString("pt-BR"),
+    };
+
+    const lines = order.items
+      .map(
+        (item) =>
+          `• ${item.quantity}x ${item.name} — ${money(item.price * item.quantity)}`
+      )
+      .join("\n");
+
+    const message = [
+      "*NOVO PEDIDO — FORNO*",
+      `Pedido: #${order.id}`,
+      `Cliente: ${customer.name}`,
+      `Telefone: ${customer.phone}`,
+      `Endereço: ${customer.address}`,
+      "",
+      "*Itens:*",
+      lines,
+      "",
+      `Subtotal: ${money(subtotal)}`,
+      `Entrega: ${money(deliveryFee)}`,
+      `*TOTAL: ${money(total)}*`,
+      `Pagamento: ${customer.payment}`,
+      customer.notes ? `Observações: ${customer.notes}` : "",
+      customer.payment === "Pix" && pixKey
+        ? `Chave Pix: ${pixKey}`
+        : "",
+      "",
+      `Acompanhe seu pedido usando o código #${order.id}.`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    setOrders((old) => [order, ...old]);
+    setTrackingId(order.id);
+    setCart([]);
+    setView("tracking");
+
+    window.open(
+      `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  }
+
+  function updateStatus(orderId, status) {
+    setOrders((old) =>
+      old.map((o) => (o.id === orderId ? { ...o, status } : o))
+    );
+  }
+
+  function configureDelivery() {
+    const value = prompt("Taxa de entrega em reais:", String(deliveryFee));
+    if (value === null) return;
+    const amount = Number(value.replace(",", "."));
+    if (!Number.isFinite(amount) || amount < 0) {
+      return alert("Informe uma taxa válida.");
+    }
+    setDeliveryFee(amount);
+  }
+
+  function configurePix() {
+    const value = prompt("Chave Pix da pizzaria:", pixKey);
+    if (value !== null) setPixKey(value.trim());
+  }
+
+  const trackedOrder = orders.find(
+    (o) => o.id === trackingId.trim().replace(/^#/, "")
+  );
+
+  return (
+    <div className="app">
+      <style>{`
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #101010; color: #f8f5ef;
+          font-family: Arial, sans-serif; }
+        button, input, select, textarea { font: inherit; }
+        button { cursor: pointer; }
+        .app { min-height: 100vh; }
+        .top { background: #171717; padding: 20px 5%;
+          display: flex; justify-content: space-between; align-items: center;
+          gap: 12px; border-bottom: 1px solid #333; flex-wrap: wrap; }
+        .logo { font-size: 30px; font-weight: 900; color: #f5a623; }
+        .sub { color: #bbb; font-size: 13px; margin-top: 5px; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { border: 0; padding: 11px 15px; border-radius: 9px;
+          background: #f5a623; color: #171717; font-weight: 700; }
+        .btn.secondary { background: #292929; color: white;
+          border: 1px solid #444; }
+        .hero { padding: 44px 5%; background:
+          linear-gradient(90deg, #19130c, #2a1b0b);
+          border-bottom: 1px solid #382919; }
+        .hero h1 { font-size: clamp(28px, 5vw, 48px); margin: 0 0 12px; }
+        .hero p { color: #d2c6b7; max-width: 600px; line-height: 1.6; }
+        .container { max-width: 1250px; padding: 28px 18px;
+          margin: auto; }
+        .tabs { display: flex; gap: 10px; overflow-x: auto;
+          padding-bottom: 18px; }
+        .tab { white-space: nowrap; background: #202020; color: #ddd;
+          border: 1px solid #393939; padding: 12px 17px; border-radius: 25px; }
+        .tab.active { background: #f5a623; color: #161616;
+          border-color: #f5a623; font-weight: 800; }
+        .search { width: 100%; max-width: 430px; background: #202020;
+          border: 1px solid #444; color: white; border-radius: 9px;
+          padding: 13px; margin-bottom: 22px; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px;
+          gap: 24px; align-items: start; }
+        .grid { display: grid; grid-template-columns:
+          repeat(auto-fill,minmax(210px,1fr)); gap: 16px; }
+        .product { background: #1b1b1b; border: 1px solid #333;
+          border-radius: 14px; overflow: hidden; }
+        .product img { width: 100%; height: 165px; object-fit: cover;
+          background: #292929; }
+        .product-body { padding: 15px; }
+        .product h3 { margin: 0 0 8px; font-size: 18px; }
+        .desc { color: #aaa; font-size: 13px; line-height: 1.5;
+          min-height: 39px; }
+        .price { color: #f5a623; font-weight: 900; font-size: 21px;
+          margin: 14px 0; }
+        .cart, .panel { background: #1b1b1b; border: 1px solid #333;
+          border-radius: 14px; padding: 18px; }
+        .cart { position: sticky; top: 15px; }
+        .cart h2, .panel h2 { margin-top: 0; }
+        .cart-item { border-bottom: 1px solid #383838; padding: 12px 0; }
+        .qty { display: flex; align-items: center; gap: 12px;
+          margin-top: 9px; }
+        .qty button { background: #333; color: white; border: 0;
+          border-radius: 6px; padding: 5px 11px; }
+        .field { display: block; width: 100%; margin: 10px 0;
+          padding: 12px; color: white; background: #252525;
+          border: 1px solid #444; border-radius: 8px; }
+        .total { display: flex; justify-content: space-between;
+          padding: 9px 0; color: #ccc; }
+        .grand { color: #f5a623; font-weight: 900; font-size: 22px; }
+        .wide { width: 100%; margin-top: 12px; }
+        .notice { color: #aaa; font-size: 12px; line-height: 1.5; }
+        .order { border: 1px solid #393939; border-radius: 10px;
+          padding: 15px; margin: 12px 0; overflow-wrap: anywhere; }
+        .admin-row { display: flex; gap: 10px; flex-wrap: wrap;
+          align-items: center; justify-content: space-between; }
+        .admin-row select { background: #252525; color: white;
+          border: 1px solid #444; border-radius: 7px; padding: 9px; }
+        .footer { padding: 30px; text-align: center; color: #888;
+          border-top: 1px solid #333; margin-top: 35px; }
+        @media(max-width: 850px) {
+          .layout { grid-template-columns: 1fr; }
+          .cart { position: static; }
+        }
+        @media(max-width: 480px) {
+          .top { padding: 16px; }
+          .logo { font-size: 25px; }
+          .hero { padding: 30px 18px; }
+          .grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+          .product img { height: 120px; }
+          .product-body { padding: 10px; }
+          .product h3 { font-size: 15px; }
+          .price { font-size: 17px; }
+          .product .btn { width: 100%; padding: 10px 5px; }
+        }
+      `}</style>
+
+      <header className="top">
+        <div>
+          <div className="logo">🔥 FORNO</div>
+          <div className="sub">Pizzas, espetinhos e muito sabor</div>
+        </div>
+        <div className="actions">
+          <button className="btn secondary" onClick={() => setView("menu")}>
+            Cardápio
+          </button>
+          <button className="btn secondary" onClick={() => setView("tracking")}>
+            Acompanhar pedido
+          </button>
+          <button className="btn" onClick={openAdmin}>
+            ⚙ Administração
+          </button>
+        </div>
+      </header>
+
+      <section className="hero">
+        <h1>Seu pedido favorito, feito na hora.</h1>
+        <p>
+          Escolha suas pizzas, espetinhos, bebidas e porções.
+          Monte seu pedido e envie diretamente para nosso WhatsApp.
+        </p>
+        <button className="btn" onClick={() => setView("menu")}>
+          Ver cardápio ↓
+        </button>
+      </section>
+
+      <main className="container">
+        {view === "menu" && (
+          <>
+            <h2>Nosso cardápio</h2>
+            <div className="tabs">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c}
+                  className={`tab ${category === c ? "active" : ""}`}
+                  onClick={() => setCategory(c)}
+                >
+                  {c === "Pizzas" ? "🍕" : c === "Espetinhos" ? "🍢" :
+                    c === "Refrigerantes" ? "🥤" : "🍟"} {c}
+                </button>
+              ))}
             </div>
-          </div>
-        </article>`).join("");
-      document.getElementById("empty").hidden = list.length > 0;
-    }
+            <input
+              className="search"
+              placeholder="Buscar produto..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="layout">
+              <section className="grid">
+                {visibleProducts.map((p) => (
+                  <article className="product" key={p.id}>
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      onError={(e) => {
+                        e.currentTarget.style.visibility = "hidden";
+                      }}
+                    />
+                    <div className="product-body">
+                      <h3>{p.name}</h3>
+                      <div className="desc">{p.description}</div>
+                      <div className="price">{money(p.price)}</div>
+                      <button className="btn wide" onClick={() => addToCart(p)}>
+                        + Adicionar
+                      </button>
+                    </div>
+                  </article>
+                ))}
+                {!visibleProducts.length && (
+                  <p>Nenhum produto disponível nesta categoria.</p>
+                )}
+              </section>
 
-    document.getElementById("filters").addEventListener("click",event=>{
-      const button = event.target.closest("button[data-category]");
-      if(!button)return;
-      activeCategory = button.dataset.category;
-      document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b===button));
-      renderProducts();
-    });
+              <aside className="cart">
+                <h2>🛒 Seu pedido ({cart.reduce((s, i) => s + i.quantity, 0)})</h2>
+                {!cart.length && <p className="notice">Seu carrinho está vazio.</p>}
+                {cart.map((item) => (
+                  <div className="cart-item" key={item.id}>
+                    <strong>{item.name}</strong>
+                    <div className="notice">{money(item.price)} cada</div>
+                    <div className="qty">
+                      <button onClick={() => changeQuantity(item.id, -1)}>−</button>
+                      <span>{item.quantity}</span>
+                      <button onClick={() => changeQuantity(item.id, 1)}>+</button>
+                      <span>{money(item.price * item.quantity)}</span>
+                    </div>
+                  </div>
+                ))}
 
-    function addToCart(id){
-      cart[id] = (cart[id] || 0) + 1;
-      updateCart();
-    }
+                <h3>Seus dados</h3>
+                <input className="field" placeholder="Nome completo"
+                  value={customer.name}
+                  onChange={(e) => setCustomer({ ...customer, name: e.target.value })} />
+                <input className="field" placeholder="Telefone com DDD"
+                  value={customer.phone}
+                  onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} />
+                <textarea className="field" placeholder="Endereço completo e ponto de referência"
+                  value={customer.address}
+                  onChange={(e) => setCustomer({ ...customer, address: e.target.value })} />
+                <select className="field" value={customer.payment}
+                  onChange={(e) => setCustomer({ ...customer, payment: e.target.value })}>
+                  <option>Pix</option>
+                  <option>Dinheiro</option>
+                  <option>Cartão na entrega</option>
+                </select>
+                <textarea className="field" placeholder="Observações do pedido"
+                  value={customer.notes}
+                  onChange={(e) => setCustomer({ ...customer, notes: e.target.value })} />
 
-    function changeQty(id,amount){
-      cart[id] = (cart[id] || 0) + amount;
-      if(cart[id] <= 0) delete cart[id];
-      updateCart();
-    }
+                <div className="total"><span>Subtotal</span><span>{money(subtotal)}</span></div>
+                <div className="total"><span>Entrega</span><span>{money(cart.length ? deliveryFee : 0)}</span></div>
+                <div className="total grand"><span>Total</span><span>{money(total)}</span></div>
+                {customer.payment === "Pix" && pixKey && (
+                  <p className="notice">Chave Pix: <strong>{pixKey}</strong></p>
+                )}
+                <button className="btn wide" onClick={checkout}>
+                  Enviar pedido pelo WhatsApp
+                </button>
+                <p className="notice">
+                  O pedido será registrado neste navegador e enviado ao WhatsApp
+                  para confirmação pela pizzaria.
+                </p>
+              </aside>
+            </div>
+          </>
+        )}
 
-    function updateCart(){
-      const entries = products.filter(p=>cart[p.id]);
-      const count = Object.values(cart).reduce((sum,q)=>sum+q,0);
-      document.getElementById("cart-count").textContent = count;
-      document.getElementById("cart-items").innerHTML = entries.length ? entries.map(p=>`
-        <div class="cart-line">
-          <div><strong>${p.name}</strong><br><span>${money(p.price)} cada</span></div>
-          <div class="qty">
-            <button type="button" onclick="changeQty(${p.id},-1)" aria-label="Diminuir ${p.name}">−</button>
-            <span>${cart[p.id]}</span>
-            <button type="button" onclick="changeQty(${p.id},1)" aria-label="Aumentar ${p.name}">+</button>
-          </div>
-        </div>`).join("") : '<p class="empty">Sua sacola está vazia. Adicione algo do cardápio!</p>';
-      const subtotal = products.reduce((sum,p)=>sum+p.price*(cart[p.id]||0),0);
-      document.getElementById("cart-total").textContent = money(subtotal + (count && document.getElementById("delivery").value==="Entrega" ? DELIVERY_FEE : 0));
-    }
+        {view === "tracking" && (
+          <section className="panel">
+            <h2>📦 Acompanhe seu pedido</h2>
+            <p className="notice">
+              Digite o código que apareceu depois de finalizar seu pedido.
+            </p>
+            <input className="field" placeholder="Código do pedido"
+              value={trackingId}
+              onChange={(e) => setTrackingId(e.target.value.replace(/^#/, ""))} />
+            <button className="btn" onClick={() => setTrackingId(trackingId.trim())}>
+              Consultar pedido
+            </button>
+            {trackedOrder ? (
+              <div className="order">
+                <h3>Pedido #{trackedOrder.id}</h3>
+                <p>Cliente: {trackedOrder.customer.name}</p>
+                <p>Realizado em: {trackedOrder.createdAt}</p>
+                <p>Total: <strong>{money(trackedOrder.total)}</strong></p>
+                <p>Status atual: <strong>{trackedOrder.status}</strong></p>
+                <div className="tabs">
+                  {STATUSES.map((s, i) => (
+                    <span key={s} className="tab"
+                      style={{
+                        background: STATUSES.indexOf(trackedOrder.status) >= i &&
+                          trackedOrder.status !== "Cancelado" ? "#356a43" : "#252525",
+                        fontSize: 12,
+                      }}>
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              trackingId && <p>Pedido não encontrado neste navegador.</p>
+            )}
+          </section>
+        )}
 
-    function openCart(){document.getElementById("cart-modal").classList.add("open");updateCart()}
-    function closeCart(){document.getElementById("cart-modal").classList.remove("open")}
-    document.getElementById("delivery").addEventListener("change",()=>{
-      document.getElementById("address-field").style.display = document.getElementById("delivery").value==="Entrega" ? "flex":"none";
-      document.getElementById("address").required = document.getElementById("delivery").value==="Entrega";
-      updateCart();
-    });
-    document.getElementById("cart-modal").addEventListener("click",e=>{if(e.target.id==="cart-modal")closeCart()});
+        {view === "admin" && admin && (
+          <section className="panel">
+            <div className="admin-row">
+              <h2>⚙ Painel administrativo</h2>
+              <button className="btn secondary" onClick={() => {
+                setAdmin(false);
+                setView("menu");
+              }}>Sair</button>
+            </div>
 
-    document.getElementById("order-form").addEventListener("submit",event=>{
-      event.preventDefault();
-      if(!Object.values(cart).some(q=>q>0)){
-        alert("Adicione pelo menos um produto à sacola.");
-        return;
-      }
-      if(!/^\d{10,15}$/.test(WHATSAPP_NUMBER)){
-        alert("O cardápio ainda precisa do número de WhatsApp da pizzaria. Configure WHATSAPP_NUMBER no código antes de usar os pedidos.");
-        return;
-      }
-      const subtotal = products.reduce((sum,p)=>sum+p.price*(cart[p.id]||0),0);
-      const delivery = document.getElementById("delivery").value;
-      const total = subtotal + (delivery==="Entrega" ? DELIVERY_FEE : 0);
-      const lines = products.filter(p=>cart[p.id]).map(p=>`${cart[p.id]}x ${p.name} — ${money(p.price*cart[p.id])}`);
-      const message = [
-        "🍕 *NOVO PEDIDO — FORNO*",
-        "",
-        `Cliente: ${document.getElementById("customer").value}`,
-        `Telefone: ${document.getElementById("phone").value}`,
-        "",
-        "*Pedido:*",
-        ...lines,
-        "",
-        `Recebimento: ${delivery}`,
-        ...(delivery==="Entrega" ? [`Endereço: ${document.getElementById("address").value}`] : []),
-        `Pagamento: ${document.getElementById("payment").value}`,
-        `Observações: ${document.getElementById("notes").value || "Nenhuma"}`,
-        `Total estimado: ${money(total)}`,
-        "",
-        "Por favor, confirme o pedido e o valor final."
-      ].join("\n");
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,"_blank","noopener");
-    });
+            <div className="actions">
+              <button className="btn" onClick={() => editProduct(null)}>
+                + Adicionar produto
+              </button>
+              <button className="btn secondary" onClick={configureDelivery}>
+                Taxa de entrega: {money(deliveryFee)}
+              </button>
+              <button className="btn secondary" onClick={configurePix}>
+                Configurar chave Pix
+              </button>
+            </div>
 
-    document.getElementById("year").textContent = new Date().getFullYear();
-    renderProducts();
-    updateCart();
-  </script>
+            <h3>Gerenciar produtos</h3>
+            {products.map((p) => (
+              <div className="order admin-row" key={p.id}>
+                <div>
+                  <strong>{p.name}</strong>
+                  <p className="notice">{p.category} · {money(p.price)}</p>
+                  <span className="notice">
+                    {p.available ? "Disponível" : "Indisponível"}
+                  </span>
+                </div>
+                <div className="actions">
+                  <button className="btn secondary" onClick={() => editProduct(p)}>
+                    Editar
+                  </button>
+                  <button className="btn secondary" onClick={() => toggleAvailability(p)}>
+                    {p.available ? "Pausar" : "Ativar"}
+                  </button>
+                  <button className="btn secondary" onClick={() => deleteProduct(p)}>
+                    Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
 
-</body>
-</html>
+            <h3>📋 Pedidos recebidos neste navegador</h3>
+            {!orders.length && <p className="notice">Nenhum pedido registrado.</p>}
+            {orders.map((o) => (
+              <div className="order" key={o.id}>
+                <div className="admin-row">
+                  <h3>Pedido #{o.id}</h3>
+                  <strong>{money(o.total)}</strong>
+                </div>
+                <p>Cliente: {o.customer.name} · {o.customer.phone}</p>
+                <p>Endereço: {o.customer.address}</p>
+                <p>Pagamento: {o.customer.payment}</p>
+                <p className="notice">{o.createdAt}</p>
+                <ul>
+                  {o.items.map((item) => (
+                    <li key={item.id}>
+                      {item.quantity}x {item.name} — {money(item.price * item.quantity)}
+                    </li>
+                  ))}
+                </ul>
+                <label htmlFor={`status-${o.id}`}>Atualizar status:</label>
+                <select id={`status-${o.id}`} className="field"
+                  value={o.status}
+                  onChange={(e) => updateStatus(o.id, e.target.value)}>
+                  {STATUSES.map((s) => <option key={s}>{s}</option>)}
+                </select>
+                <button className="btn secondary" onClick={() => {
+                  const msg = `Olá ${o.customer.name}, seu pedido #${o.id} está: ${o.status}.`;
+                  window.open(`https://wa.me/${o.customer.phone.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`, "_blank");
+                }}>
+                  Avisar cliente pelo WhatsApp
+                </button>
+              </div>
+            ))}
+            <p className="notice">
+              Importante: esta versão salva os dados apenas no navegador atual.
+              Não utilize a senha de demonstração em produção.
+            </p>
+          </section>
+        )}
+      </main>
+
+      <footer className="footer">
+        <strong>🔥 FORNO</strong>
+        <p>Feito com sabor. Seu pedido, do nosso forno até você.</p>
+      </footer>
+    </div>
+  );
+}
